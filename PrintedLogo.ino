@@ -5,7 +5,7 @@
 
 // set var
 #define MAX_DISTANCE 30
-#define DELTA_CM     1.5  // 0.45 0.5 0.8
+#define DELTA_CM     2.0  // 0.45 0.5 0.8
 #define distMeasurementsAmmount 5
 
 float zeroPointCm = 0.0;
@@ -66,6 +66,8 @@ void setup() {
   {
   	zeroPointCm = initProcedure(); // init
   }
+
+  //zeroPointCm = 17.2;
 }
 
 void loop() {
@@ -81,23 +83,24 @@ void loop() {
 				CurrentDistCm = IRAverageDist();
 				delay(50);
 				if(abs(CurrentDistCm - IRAverageDist()) < DELTA_CM)
+				//if(abs(zeroPointCm - IRAverageDist()) < DELTA_CM)
 				{
 					flag = true;
 				}
 				else
 				{
 					flag = false;
-					break;
+					break; // перевірити тут
 				}
 			}
 			
 			if(flag)
 			{
 				digitalWrite(RelOut, HIGH); // спрацювання клапана
-				// Serial.println("if HIGH");
+				Serial.println("(if) RelOut HIGH");
 				delay(200); // 200 ms працює клапан
 				digitalWrite(RelOut, LOW);
-				// Serial.println("if LOW");
+				// Serial.println("(if) RelOut LOW");
 				state_LED = true;
 				delay(3000); // затримка від хибних спрацювань під час відпрацювання циклу машини (цикл машини 3,5 с)
 			}
@@ -106,7 +109,7 @@ void loop() {
 	else
 	{
 		digitalWrite(RelOut, LOW);
-		// Serial.println("else LOW");
+		// Serial.println("(else) RelOut LOW");
 		state_LED = false;
 	}
 }
