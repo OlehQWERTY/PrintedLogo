@@ -5,8 +5,8 @@
 
 // set var
 #define MAX_DISTANCE 30
-#define DELTA_CM     2.5  // 0.45 0.5 0.8
-#define distMeasurementsAmmount 20
+#define DELTA_CM     1.5  // 0.45 0.5 0.8
+#define distMeasurementsAmmount 5
 
 float zeroPointCm = 0.0;
 bool state_LED = true;
@@ -76,11 +76,11 @@ void loop() {
 	{
 		if(state_LED != true)
 		{
-			for(int i = 0; i < 10; i++) // 10 * delay(50) = 250 wait after someone putted suole
+			for(int i = 0; i < 6; i++) // 10 * delay(50) = 500 wait after someone putted suole
 			{
 				CurrentDistCm = IRAverageDist();
 				delay(50);
-				if(abs(CurrentDistCm - IRAverageDist()) < 2)
+				if(abs(CurrentDistCm - IRAverageDist()) < DELTA_CM)
 				{
 					flag = true;
 				}
@@ -89,25 +89,24 @@ void loop() {
 					flag = false;
 					break;
 				}
-
 			}
 			
 			if(flag)
 			{
-				digitalWrite(RelOut, HIGH);
-				Serial.println("if HIGH");
-				delay(200);
+				digitalWrite(RelOut, HIGH); // спрацювання клапана
+				// Serial.println("if HIGH");
+				delay(200); // 200 ms працює клапан
 				digitalWrite(RelOut, LOW);
-				Serial.println("if LOW");
+				// Serial.println("if LOW");
 				state_LED = true;
-				delay(3000);
+				delay(3000); // затримка від хибних спрацювань під час відпрацювання циклу машини (цикл машини 3,5 с)
 			}
 		}
 	}
 	else
 	{
 		digitalWrite(RelOut, LOW);
-		Serial.println("else LOW");
+		// Serial.println("else LOW");
 		state_LED = false;
 	}
 }
