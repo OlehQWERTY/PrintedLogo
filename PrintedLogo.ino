@@ -2,7 +2,6 @@
 #define LED          10
 #define IR_SENSOR     5
 #define RelOut        4
-
 // set var
 #define MAX_DISTANCE 30
 #define DELTA_CM     2.0  // 0.45 0.5 0.8
@@ -66,19 +65,18 @@ void setup() {
   {
   	zeroPointCm = initProcedure(); // init
   }
-
   //zeroPointCm = 17.2;
 }
 
 void loop() {
-
-	Serial.println(IRAverageDist());
-
+	//Serial.println(IRAverageDist());
 	if(soleChecker(zeroPointCm, IRAverageDist(), DELTA_CM))
 	{
 		if(state_LED != true)
 		{
-			for(int i = 0; i < 6; i++) // 10 * delay(50) = 500 wait after someone putted suole
+			int tmp = 0;  // if random value error counter
+			// error here ???
+			for(int i = 0; i < 8; i++) // 10 * delay(50) = 500 wait after someone putted suole
 			{
 				CurrentDistCm = IRAverageDist();
 				delay(50);
@@ -89,19 +87,28 @@ void loop() {
 				}
 				else
 				{
+					// flag = false;
+					// Serial.println("flag = false!!!");
+					tmp++;
+					// break; // перевірити тут
+				}
+				// set up this counter
+				if(tmp >= 2)  // if ammount of random value error > 2 
+				{
 					flag = false;
-					break; // перевірити тут
+					Serial.println("flag = false...");
+					break;
 				}
 			}
 			
 			if(flag)
 			{
 				digitalWrite(RelOut, HIGH); // спрацювання клапана
-				Serial.println("(if) RelOut HIGH");
+				//Serial.println("(if) RelOut HIGH");
 				delay(200); // 200 ms працює клапан
 				digitalWrite(RelOut, LOW);
 				// Serial.println("(if) RelOut LOW");
-				state_LED = true;
+				state_LED = true; // ??? why we need it?
 				delay(3000); // затримка від хибних спрацювань під час відпрацювання циклу машини (цикл машини 3,5 с)
 			}
 		}
