@@ -8,9 +8,7 @@
 #define distMeasurementsAmmount 5
 
 float zeroPointCm = 0.0;
-bool state_LED = true;
 float CurrentDistCm = 0.0;
-
 bool flag = false;
 
 
@@ -46,9 +44,8 @@ float initProcedure() {
 	return avarageDist;
 }
 
-bool soleChecker(float zeroPoint, float IRAverDist, float delta) {
-
-	if(zeroPoint - IRAverDist > delta)
+bool soleChecker(float zeroPoint = zeroPointCm, float IRAverDist = IRAverageDist(), float delta = DELTA_CM) {
+	if( IRAverDist > zeroPoint && (IRAverDist - zeroPointCm) > DELTA_CM ) // (zeroPoint - IRAverDist > delta)
 	{
 		return true;
 	}
@@ -61,62 +58,52 @@ void setup() {
   pinMode(LED, OUTPUT);
   pinMode(RelOut, OUTPUT);
 
-  while(zeroPointCm == 30 || zeroPointCm < 5)
+  while(zeroPointCm < 5)
   {
   	zeroPointCm = initProcedure(); // init
   }
-  //zeroPointCm = 17.2;
 }
 
 void loop() {
-	//Serial.println(IRAverageDist());
-	if(soleChecker(zeroPointCm, IRAverageDist(), DELTA_CM))
+	if(soleChecker())
 	{
-		if(state_LED != true)
+		flag = false;
+		int tmp = 1;  // random value error counter
+		for(int i = 0; i < 8; i++) // 8 * delay(50) = 400 wait after someone putted suole
 		{
-			int tmp = 0;  // if random value error counter
-			// error here ???
-			for(int i = 0; i < 8; i++) // 10 * delay(50) = 500 wait after someone putted suole
+			CurrentDistCm = IRAverageDist();
+			Serial.println(CurrentDistCm);
+			delay(50);
+
+			if(soleChecker())
 			{
-				CurrentDistCm = IRAverageDist();
-				delay(50);
-				if(abs(CurrentDistCm - IRAverageDist()) < DELTA_CM)
-				//if(abs(zeroPointCm - IRAverageDist()) < DELTA_CM)
-				{
-					flag = true;
-				}
-				else
-				{
-					// flag = false;
-					// Serial.println("flag = false!!!");
-					tmp++;
-					// break; // перевірити тут
-				}
-				// set up this counter
-				if(tmp >= 2)  // if ammount of random value error > 2 
-				{
-					flag = false;
-					Serial.println("flag = false...");
-					break;
-				}
+				flag = true;
 			}
-			
-			if(flag)
+			else
 			{
-				digitalWrite(RelOut, HIGH); // спрацювання клапана
-				//Serial.println("(if) RelOut HIGH");
-				delay(200); // 200 ms працює клапан
-				digitalWrite(RelOut, LOW);
-				// Serial.println("(if) RelOut LOW");
-				state_LED = true; // ??? why we need it?
-				delay(3000); // затримка від хибних спрацювань під час відпрацювання циклу машини (цикл машини 3,5 с)
+				tmp++;
+			}
+			if(tmp >= 4)  // if ammount of random error >= number
+			{
+				flag = false;
+				Serial.println("flag = false...");
+				break;
 			}
 		}
+	}
+	
+	if(flag)
+	{
+		digitalWrite(RelOut, HIGH); // спрацювання клапана
+		Serial.println("(if) RelOut HIGH");
+		delay(200); // 200 ms працює клапан
+		digitalWrite(RelOut, LOW);
+		Serial.println("(if) RelOut LOW");
+		delay(3500); // затримка від хибних спрацювань під час відпрацювання циклу машини (цикл машини 3,5 с)
 	}
 	else
 	{
 		digitalWrite(RelOut, LOW);
-		// Serial.println("(else) RelOut LOW");
-		state_LED = false;
+		Serial.println("(else) RelOut LOW");
 	}
 }
