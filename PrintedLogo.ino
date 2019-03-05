@@ -1,10 +1,12 @@
+// needs that operator puted next sole after 0.1 s after first one
+
 // pins
 #define LED          10
 #define IR_SENSOR     5
 #define RelOut        4
 // set var
 #define MAX_DISTANCE 30
-#define DELTA_CM     1.4  // 0.45 0.5 0.8
+#define DELTA_CM     1.6  // 0.45 0.5 0.8
 #define distMeasurementsAmmount 5
 
 float zeroPointCm = 0.0;
@@ -84,7 +86,7 @@ void loop() {
 				Serial.println("Debug point 4");
 				CurrentDistCm = IRAverageDist();
 				Serial.println("Debug point 5");
-				delay(50);
+				delay(30);
 				if(abs(CurrentDistCm - IRAverageDist()) < DELTA_CM)
 				//if(abs(zeroPointCm - IRAverageDist()) < DELTA_CM)
 				{
