@@ -4,7 +4,7 @@
 #define RelOut        4
 // set var
 #define MAX_DISTANCE 30
-#define DELTA_CM     2.0  // 0.45 0.5 0.8
+#define DELTA_CM     1.5  // 0.45 0.5 0.8
 #define distMeasurementsAmmount 5
 
 float zeroPointCm = 0.0;
@@ -40,7 +40,7 @@ float initProcedure() {
 		digitalWrite(LED, LOW);
 	}
 	avarageDist = avarageDist/4.0;
-
+	Serial.println("Init procedure is done!");
 	return avarageDist;
 }
 
@@ -53,7 +53,6 @@ bool soleChecker(float zeroPoint = zeroPointCm, float IRAverDist = IRAverageDist
 }
 
 void setup() {
-
   Serial.begin(9600);
   pinMode(LED, OUTPUT);
   pinMode(RelOut, OUTPUT);
@@ -65,6 +64,7 @@ void setup() {
 }
 
 void loop() {
+	Serial.println(IRAverageDist());
 	if(soleChecker())
 	{
 		flag = false;
@@ -104,6 +104,6 @@ void loop() {
 	else
 	{
 		digitalWrite(RelOut, LOW);
-		Serial.println("(else) RelOut LOW");
+		// Serial.println("(else) RelOut LOW");
 	}
 }
